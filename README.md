@@ -1,0 +1,1 @@
+通过canal解析binlog,再发送到kafka服务端

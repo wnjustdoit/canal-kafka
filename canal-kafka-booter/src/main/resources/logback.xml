@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<configuration>
+    <property name="LOG_FILE_NAME" value="app"/>
+    <property name="FILE_PATTERN"
+              value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg - %replace(%ex){'\n','---'} %n"/>
+    <property name="CONSOLE_LOG_PATTERN"
+              value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg %n"/>
+
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>${CONSOLE_LOG_PATTERN}</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="FILE"
+              class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <!--See also http://logback.qos.ch/manual/appenders.html#RollingFileAppender -->
+        <File>../logs/${LOG_FILE_NAME}.log</File>
+        <encoder>
+            <pattern>${FILE_PATTERN}</pattern>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <timeBasedFileNamingAndTriggeringPolicy
+                    class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>100MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+            <fileNamePattern>logs/archive/${LOG_FILE_NAME}-%d{yyyy-MM-dd}-%i.log.gz</fileNamePattern>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+    </appender>
+
+    <logger name="com.caiya" level="DEBUG" additivity="false">
+        <appender-ref ref="FILE"/>
+        <springProfile name="dev,local">
+            <appender-ref ref="CONSOLE"/>
+        </springProfile>
+    </logger>
+
+    <logger name="org.apache.kafka" level="INFO" additivity="false">
+        <appender-ref ref="FILE"/>
+        <springProfile name="dev,local">
+            <appender-ref ref="CONSOLE"/>
+        </springProfile>
+    </logger>
+
+    <root level="DEBUG">
+        <appender-ref ref="FILE"/>
+        <springProfile name="dev,local">
+            <appender-ref ref="CONSOLE"/>
+        </springProfile>
+    </root>
+
+</configuration>
